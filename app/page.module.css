@@ -1,0 +1,19 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1rem;
+  padding: 2rem;
+  max-width: 40rem;
+}
+
+.page h1 {
+  font-size: 2rem;
+  letter-spacing: -0.04em;
+}
+
+.page p {
+  color: color-mix(in srgb, var(--foreground) 72%, transparent);
+  line-height: 1.5;
+}
