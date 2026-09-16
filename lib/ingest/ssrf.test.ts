@@ -2,9 +2,20 @@ import { describe, expect, it } from "vitest";
 import { parseGitHubRepoUrl, UnsafeUrlError } from "./ssrf";
 
 describe("parseGitHubRepoUrl", () => {
-  it("parses owner/repo URLs", () => {
+  it("parses owner/repo shorthand, quotes, and trailing punctuation", () => {
     expect(
       parseGitHubRepoUrl("https://github.com/dayniia/AgentReady"),
+    ).toEqual({ owner: "dayniia", repo: "AgentReady", ref: undefined });
+    expect(parseGitHubRepoUrl("dayniia/AgentReady")).toEqual({
+      owner: "dayniia",
+      repo: "AgentReady",
+      ref: undefined,
+    });
+    expect(
+      parseGitHubRepoUrl("https://github.com/dayniia/AgentReady)"),
+    ).toEqual({ owner: "dayniia", repo: "AgentReady", ref: undefined });
+    expect(
+      parseGitHubRepoUrl("<https://github.com/dayniia/AgentReady.git>"),
     ).toEqual({ owner: "dayniia", repo: "AgentReady", ref: undefined });
   });
 

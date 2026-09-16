@@ -12,6 +12,7 @@ export type GitHubRepoRef = {
 };
 
 const OWNER_REPO_RE = /^[A-Za-z0-9._-]+$/;
+const SHORT_REPO_RE = /^[A-Za-z0-9._-]+\/[A-Za-z0-9._-]+(?:\.git)?$/;
 const ALLOWED_PAGE_HOSTS = new Set(["github.com", "www.github.com"]);
 const BLOCKED_HOSTS = new Set([
   "localhost",
@@ -24,12 +25,7 @@ const BLOCKED_HOSTS = new Set([
 ]);
 
 export function parseGitHubRepoUrl(input: string): GitHubRepoRef {
-  let parsed: URL;
-  try {
-    parsed = new URL(input.trim());
-  } catch {
-    throw new UnsafeUrlError("Invalid URL");
-  }
+  const parsed = parseHttpsGitHubUrl(normalizeGitHubInput(input));
 
   if (parsed.protocol !== "https:") {
     throw new UnsafeUrlError("Only HTTPS GitHub URLs are allowed");
@@ -53,27 +49,27 @@ export function parseGitHubRepoUrl(input: string): GitHubRepoRef {
     throw new UnsafeUrlError("URL must be https://github.com/owner/repo");
   }
 
-  const owner = parts[0];
-  const repo = parts[1].replace(/\.git$/, "");
-  if (
-    !OWNER_REPO_RE.test(owner) ||
-    !OWNER_REPO_RE.test(repo) ||
-    owner === "." ||
-    owner === ".." ||
-    repo === "." ||
-    repo === ".."
-  ) {
+  const owner = decodeURIComponent(parts[0] ?? "");
+  const repo = decodeURIComponent(parts[1] ?? "").replace(/\.git$/i, "");
+  if (!isSafeName(owner) || !isSafeName(repo)) {
     throw new UnsafeUrlError("Invalid owner or repo name");
   }
 
   let ref: string | undefined;
   if (parts[2] === "tree" && parts[3]) {
     ref = decodeURIComponent(parts.slice(3).join("/"));
+    if (ref.startsWith("refs/heads/")) {
+      ref = ref.slice("refs/heads/".length);
+    }
   } else if (parts[2] === "blob" && parts[3]) {
     ref = decodeURIComponent(parts[3]);
   }
 
   return { owner, repo, ref };
+}
+
+export function githubCloneUrl(repo: GitHubRepoRef): string {
+  return `https://github.com/${repo.owner}/${repo.repo}.git`;
 }
 
 export function assertSafeDownloadUrl(url: string): URL {
@@ -97,6 +93,30 @@ export function assertSafeDownloadUrl(url: string): URL {
   }
 
   return parsed;
+}
+
+export function normalizeGitHubInput(raw: string): string {
+  let value = raw.trim().replace(/^\uFEFF/, "").replace(/\u00a0/g, " ").trim();
+  value = value.replace(/^['"`<(\[]+/, "").replace(/['"`>)\]]+$/g, "");
+  value = value.replace(/[.,;]+$/g, "").trim();
+  if (SHORT_REPO_RE.test(value)) {
+    return `https://github.com/${value.replace(/\.git$/i, "")}`;
+  }
+  return value;
+}
+
+function parseHttpsGitHubUrl(value: string): URL {
+  try {
+    return new URL(value);
+  } catch {
+    throw new UnsafeUrlError(
+      "Invalid URL — use https://github.com/owner/repo or owner/repo",
+    );
+  }
+}
+
+function isSafeName(value: string): boolean {
+  return OWNER_REPO_RE.test(value) && value !== "." && value !== "..";
 }
 
 function isBlockedHost(host: string): boolean {

@@ -6,7 +6,7 @@ import {
 } from "@/lib/core";
 import { extractNextJsRoutes } from "@/lib/core/extractors/nextjs";
 import type { ClassifiedRoute, JsonGenerator, SourceFile } from "@/lib/core";
-import { ingestGitHubRepo, UnsafeUrlError } from "@/lib/ingest";
+import { ingestGitHubRepo, ingestWorkspace, UnsafeUrlError } from "@/lib/ingest";
 import type { GitHubRepoRef } from "@/lib/ingest";
 
 export { UnsafeUrlError };
@@ -37,6 +37,21 @@ export async function runScan(
   const { repo, files } = await ingest(githubUrl, {
     token: process.env.GITHUB_TOKEN,
   });
+  return classifyIngested({ repo, files }, deps);
+}
+
+export async function runWorkspaceScan(
+  deps: ScanDeps = {},
+): Promise<ScanResult> {
+  const { repo, files } = await ingestWorkspace();
+  return classifyIngested({ repo, files }, deps);
+}
+
+async function classifyIngested(
+  ingested: { repo: GitHubRepoRef; files: SourceFile[] },
+  deps: ScanDeps,
+): Promise<ScanResult> {
+  const { repo, files } = ingested;
   const warnings: string[] = [];
 
   if (files.length === 0) {
@@ -44,9 +59,10 @@ export async function runScan(
     return { repo, routes: [], warnings };
   }
 
-  const generateJson = deps.generateJson === undefined
-    ? defaultGenerator(warnings)
-    : deps.generateJson;
+  const generateJson =
+    deps.generateJson === undefined
+      ? defaultGenerator(warnings)
+      : deps.generateJson;
 
   if (!generateJson) {
     const routes = extractNextJsRoutes(files).map(unclassified);

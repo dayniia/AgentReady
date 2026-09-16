@@ -23,20 +23,19 @@ type ScanResponse = {
 
 export default function ScanForm() {
   const [githubUrl, setGithubUrl] = useState(
-    "https://github.com/dayniia/AgentReady",
+    "https://github.com/dayniia/AgentReady/tree/feat/v0.1-core",
   );
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<ScanResponse | null>(null);
 
-  async function onSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  async function scan(body: { githubUrl?: string; workspace?: boolean }) {
     setLoading(true);
     setResult(null);
     try {
       const response = await fetch("/api/scan", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ githubUrl }),
+        body: JSON.stringify(body),
       });
       const payload = (await response.json()) as ScanResponse;
       if (!response.ok) {
@@ -53,6 +52,11 @@ export default function ScanForm() {
     }
   }
 
+  async function onSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    await scan({ githubUrl });
+  }
+
   return (
     <div>
       <form className={styles.form} onSubmit={onSubmit}>
@@ -67,6 +71,13 @@ export default function ScanForm() {
         />
         <button type="submit" disabled={loading}>
           {loading ? "Scanning…" : "Scan"}
+        </button>
+        <button
+          type="button"
+          disabled={loading}
+          onClick={() => scan({ workspace: true })}
+        >
+          Scan this workspace
         </button>
       </form>
 

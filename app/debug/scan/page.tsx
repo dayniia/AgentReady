@@ -7,8 +7,9 @@ export default function DebugScanPage() {
       <p className={styles.kicker}>Debug</p>
       <h1>Scan a public GitHub repo</h1>
       <p className={styles.lede}>
-        Paste a Next.js repository URL. This page is a pipeline inspector, not
-        the product dashboard.
+        Paste a Next.js repository URL, or scan this workspace if GitHub HTTPS
+        is blocked on your network. This page is a pipeline inspector, not the
+        product dashboard.
       </p>
       <ScanForm />
     </main>

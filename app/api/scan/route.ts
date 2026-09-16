@@ -1,6 +1,6 @@
 import { corsHeaders } from "@/lib/server/cors";
 import { createRateLimiter, RateLimitError } from "@/lib/server/rate-limit";
-import { runScan, UnsafeUrlError } from "@/lib/server/scan";
+import { runScan, runWorkspaceScan, UnsafeUrlError } from "@/lib/server/scan";
 
 const limiter = createRateLimiter({ windowMs: 10 * 60 * 1000, max: 10 });
 
@@ -19,15 +19,14 @@ export async function POST(request: Request) {
       "unknown";
     limiter.check(ip);
 
-    const body = (await request.json()) as { githubUrl?: unknown };
-    if (typeof body.githubUrl !== "string" || body.githubUrl.trim() === "") {
-      return Response.json(
-        { error: "githubUrl is required" },
-        { status: 400, headers },
-      );
-    }
-
-    const result = await runScan(body.githubUrl);
+    const body = (await request.json()) as {
+      githubUrl?: unknown;
+      workspace?: unknown;
+    };
+    const result =
+      body.workspace === true
+        ? await runWorkspaceScan()
+        : await scanGitHub(body.githubUrl);
     return Response.json(result, { status: 200, headers });
   } catch (error) {
     if (error instanceof RateLimitError) {
@@ -42,4 +41,13 @@ export async function POST(request: Request) {
     const message = error instanceof Error ? error.message : "Scan failed";
     return Response.json({ error: message }, { status: 502, headers });
   }
+}
+
+function scanGitHub(githubUrl: unknown) {
+  if (typeof githubUrl !== "string" || githubUrl.trim() === "") {
+    throw new UnsafeUrlError(
+      "githubUrl is required — use https://github.com/owner/repo or owner/repo",
+    );
+  }
+  return runScan(githubUrl);
 }
