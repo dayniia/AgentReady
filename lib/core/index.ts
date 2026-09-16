@@ -1,4 +1,5 @@
 export type { ActionType, ClassifiedRoute, HttpMethod, Parameter, Route, SourceFile } from "./types";
+export type { JsonGenerator } from "./classify";
 export { extractNextJsRoutes } from "./extractors/nextjs";
 export { stripSecrets } from "./secrets";
 export { classifyRoute, unclassified } from "./classify";
