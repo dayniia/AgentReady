@@ -83,3 +83,36 @@
   white-space: pre-wrap;
   word-break: break-word;
 }
+
+.outputs {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin-top: 2rem;
+}
+
+.outputHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.outputHeader h2,
+.outputHeader h3 {
+  font-size: 1rem;
+}
+
+.outputHeader button {
+  padding: 0.4rem 0.7rem;
+  border: 1px solid color-mix(in srgb, var(--foreground) 18%, transparent);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.outputBlock {
+  display: flex;
+  flex-direction: column;
+}

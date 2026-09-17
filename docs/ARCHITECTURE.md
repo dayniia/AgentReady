@@ -12,8 +12,8 @@ GitHub URL
          classify.ts            Gemini JSON + Zod
          cache.ts               sourceHash + method + path
     → ClassifiedRoute[]
-    → POST /api/scan  and  /debug/scan
-    → (later) lib/generators  llms.txt / MCP / Voxide
+    → lib/generators (llms.txt, mcp-tools.json, mcp-server.mjs)
+    → POST /api/scan  and  /debug/scan (copy + zip)
 ```
 
 ## Core contract

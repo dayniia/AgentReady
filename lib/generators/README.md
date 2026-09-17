@@ -1,11 +1,13 @@
 # Generators
 
-Person B owns this folder (V0.2).
+Pure templating. No LLM calls. Input is `ClassifiedRoute[]` from `lib/core`.
 
-Templates here consume `ClassifiedRoute[]` from `lib/core` and produce:
+| File | Output |
+|---|---|
+| `llms-txt.ts` | `llms.txt` |
+| `mcp.ts` | `mcp-tools.json` plus a runnable `mcp-server.mjs` |
+| `index.ts` | `generateOutputs(routes, { title })` |
 
-- `llms.txt`
-- MCP tool definitions
-- later: Voxide `registerCapability()` boilerplate
+HEAD/OPTIONS routes are omitted. Duplicate `action_name`s get a method/path suffix.
 
-No LLM calls in this layer — pure templating off the classified JSON.
+Voxide capability output is deferred (V0.5).

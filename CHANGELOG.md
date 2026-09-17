@@ -9,6 +9,12 @@ Format matches the project roadmap: one entry per version bump.
 - What's next
 ```
 
+## V0.2 — 2026-09-17
+
+- What shipped: Tool now generates llms.txt and MCP tool definitions automatically, with copy-paste and zip-download delivery. Also emits a runnable `mcp-server.mjs` (stdio JSON-RPC) from the same classified JSON — no extra Gemini calls.
+- What broke / known issues: Delivery UI lives on `/debug/scan` until Person D's dashboard; OPTIONS/HEAD routes are omitted from generated files; Voxide capability output is still deferred.
+- What's next: V0.3 Agent Readiness Score (parallel). Voxide dashboard is later.
+
 ## V0.1.4 — 2026-09-17
 
 - What shipped: Default model is `gemini-3.5-flash-lite` (higher free-tier quota). Classification uses at most two compact batch calls and stops immediately on HTTP 429 instead of retrying each remaining route.

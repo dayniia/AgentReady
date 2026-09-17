@@ -23,6 +23,12 @@ describe("runScan", () => {
     expect(result.routes).toHaveLength(1);
     expect(result.routes[0]?.classification_status).toBe("ok");
     expect(result.routes[0]?.action_name).toBe("list_bookings");
+    expect(result.outputs.map((file) => file.filename)).toEqual([
+      "llms.txt",
+      "mcp-tools.json",
+      "mcp-server.mjs",
+    ]);
+    expect(result.outputs[0]?.content).toContain("list_bookings");
   });
 
   it("rejects an unsafe URL before ingest", async () => {

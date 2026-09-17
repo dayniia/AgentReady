@@ -18,7 +18,12 @@ Response `200`:
 {
   "repo": { "owner": "dayniia", "repo": "AgentReady", "ref": "main" },
   "routes": [],
-  "warnings": []
+  "warnings": [],
+  "outputs": [
+    { "filename": "llms.txt", "content": "# ..." },
+    { "filename": "mcp-tools.json", "content": "{ ... }" },
+    { "filename": "mcp-server.mjs", "content": "#!/usr/bin/env node\n..." }
+  ]
 }
 ```
 
@@ -45,7 +50,9 @@ Errors:
 | `429` | Per-IP rate limit (10 scans / 10 minutes) |
 | `502` | GitHub or Gemini transport failure |
 
-If `GEMINI_API_KEY` is unset, the handler still extracts routes and returns them as `unclassified` with a warning. Generators can run against that shape, but descriptions will be placeholders.
+If `GEMINI_API_KEY` is unset, the handler still extracts routes and returns them as `unclassified` with a warning. Generators still run against that shape, but descriptions will be placeholders.
+
+`outputs` is produced by `lib/generators` with no extra Gemini calls. OPTIONS/HEAD routes are omitted from generated files.
 
 ## TypeScript import
 

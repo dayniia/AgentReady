@@ -18,6 +18,7 @@ type ScanResponse = {
   repo?: { owner: string; repo: string; ref?: string };
   routes?: ScanRow[];
   warnings?: string[];
+  outputs?: { filename: string; content: string }[];
   error?: string;
 };
 
@@ -132,6 +133,60 @@ export default function ScanForm() {
           </pre>
         </div>
       ) : null}
+
+      {result?.outputs && result.outputs.length > 0 ? (
+        <section className={styles.outputs}>
+          <div className={styles.outputHeader}>
+            <h2>Generated files</h2>
+            <button
+              type="button"
+              onClick={() => downloadZip(result.outputs ?? [])}
+            >
+              Download all zip
+            </button>
+          </div>
+          {result.outputs.map((file) => (
+            <OutputBlock key={file.filename} file={file} />
+          ))}
+        </section>
+      ) : null}
     </div>
   );
+}
+
+function OutputBlock({ file }: { file: { filename: string; content: string } }) {
+  const [copied, setCopied] = useState(false);
+
+  async function copy() {
+    await navigator.clipboard.writeText(file.content);
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 1500);
+  }
+
+  return (
+    <article className={styles.outputBlock}>
+      <div className={styles.outputHeader}>
+        <h3>{file.filename}</h3>
+        <button type="button" onClick={copy}>
+          {copied ? "Copied" : "Copy"}
+        </button>
+      </div>
+      <pre className={styles.json}>{file.content}</pre>
+    </article>
+  );
+}
+
+async function downloadZip(files: { filename: string; content: string }[]) {
+  const JSZip = (await import("jszip")).default;
+  const zip = new JSZip();
+  for (const file of files) {
+    zip.file(file.filename, file.content);
+  }
+  const blob = await zip.generateAsync({ type: "blob" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "agent-ready-outputs.zip";
+  link.click();
+  URL.revokeObjectURL(url);
 }
