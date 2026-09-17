@@ -82,7 +82,7 @@ async function classifyIngested(
 }
 
 function defaultGenerator(warnings: string[]): JsonGenerator | null {
-  const apiKey = process.env.GEMINI_API_KEY;
+  const apiKey = process.env.GEMINI_API_KEY?.trim();
   if (!apiKey) {
     warnings.push(
       "GEMINI_API_KEY is not set; routes were extracted but not classified.",
@@ -90,7 +90,7 @@ function defaultGenerator(warnings: string[]): JsonGenerator | null {
     return null;
   }
   return createGeminiJsonGenerator({
-    apiKey,
-    model: process.env.GEMINI_MODEL,
+    apiKey: apiKey,
+    model: process.env.GEMINI_MODEL?.trim(),
   });
 }
