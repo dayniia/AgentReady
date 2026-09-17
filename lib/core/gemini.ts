@@ -28,6 +28,7 @@ export function createGeminiJsonGenerator(
         contents: [{ parts: [{ text: stripSecrets(prompt) }] }],
         generationConfig: {
           temperature: 0,
+          maxOutputTokens: 4096,
           responseMimeType: "application/json",
         },
       }),

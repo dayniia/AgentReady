@@ -6,6 +6,7 @@ import {
   buildBatchPrompt,
   classifiedFrom,
   classifyRoute,
+  unclassified,
 } from "./classify";
 import { extractNextJsRoutes } from "./extractors/nextjs";
 import type { JsonGenerator } from "./classify";
@@ -40,20 +41,24 @@ export async function classifySourceFiles(
     }
   }
 
-  if (pending.length === 1) {
-    await classifyOne(pending[0], sourceByPath, options.generateJson, cache, results);
-  } else if (pending.length > 1) {
-    await classifyBatch(pending, sourceByPath, options.generateJson, cache, results);
-    const missing = pending.filter((route) => {
-      const current = results.get(cacheKey(route));
-      return !current || current.classification_status !== "ok";
-    });
-    for (const route of missing) {
-      await classifyOne(route, sourceByPath, options.generateJson, cache, results);
+  try {
+    if (pending.length === 1) {
+      await classifyOne(pending[0], sourceByPath, options.generateJson, cache, results);
+    } else if (pending.length > 1) {
+      await tryBatch(pending, sourceByPath, options.generateJson, cache, results);
+      const missing = pending.filter((route) => !isOk(results.get(cacheKey(route))));
+      if (missing.length > 0) {
+        await tryBatch(missing, sourceByPath, options.generateJson, cache, results);
+      }
     }
+  } catch (error) {
+    stampQuotaFailures(pending, results, error);
   }
 
-  return routes.map((route) => results.get(cacheKey(route)) ?? unclassifiedMissing(route));
+  return routes.map((route) => {
+    const current = results.get(cacheKey(route));
+    return current ?? unclassified(route);
+  });
 }
 
 async function classifyBatch(
@@ -63,33 +68,44 @@ async function classifyBatch(
   cache: ClassificationCache,
   results: Map<string, ClassifiedRoute>,
 ) {
-  try {
-    const raw = await generateJson(
-      buildBatchPrompt(
-        routes.map((route) => ({
-          route,
-          source: sourceByPath.get(route.filePath) ?? "",
-        })),
-      ),
-    );
-    const parsed = parseClassificationBatch(raw);
-    const byKey = new Map(
-      parsed.map((item) => [`${item.method}:${item.path}`, item.fields]),
-    );
-    for (const route of routes) {
-      const fields = byKey.get(`${route.method}:${route.path}`);
-      if (!fields) {
-        continue;
-      }
-      const classified = classifiedFrom(route, fields);
-      cache.set(cacheKey(route), classified);
-      results.set(cacheKey(route), classified);
+  const raw = await generateJson(
+    buildBatchPrompt(
+      routes.map((route) => ({
+        route,
+        source: sourceByPath.get(route.filePath) ?? "",
+      })),
+    ),
+  );
+  const parsed = parseClassificationBatch(raw);
+  const byKey = new Map(
+    parsed.map((item) => [matchKey(item.method, item.path), item.fields]),
+  );
+  for (const route of routes) {
+    const fields = byKey.get(matchKey(route.method, route.path));
+    if (!fields) {
+      continue;
     }
-  } catch {
-    // Per-route retry handles this.
+    const classified = classifiedFrom(route, fields);
+    cache.set(cacheKey(route), classified);
+    results.set(cacheKey(route), classified);
   }
 }
 
+async function tryBatch(
+  routes: Route[],
+  sourceByPath: Map<string, string>,
+  generateJson: JsonGenerator,
+  cache: ClassificationCache,
+  results: Map<string, ClassifiedRoute>,
+) {
+  try {
+    await classifyBatch(routes, sourceByPath, generateJson, cache, results);
+  } catch (error) {
+    if (isQuotaError(error)) {
+      throw error;
+    }
+  }
+}
 async function classifyOne(
   route: Route,
   sourceByPath: Map<string, string>,
@@ -108,17 +124,40 @@ async function classifyOne(
   results.set(cacheKey(route), result);
 }
 
-function cacheKey(route: Route): string {
-  return classificationCacheKey(route.sourceHash, route.method, route.path);
+function stampQuotaFailures(
+  pending: Route[],
+  results: Map<string, ClassifiedRoute>,
+  error: unknown,
+) {
+  if (!isQuotaError(error)) {
+    throw error;
+  }
+  const message =
+    error instanceof Error ? error.message : "Gemini quota exceeded";
+  for (const route of pending) {
+    if (isOk(results.get(cacheKey(route)))) {
+      continue;
+    }
+    const result = unclassified(route);
+    result.description = `Needs review — ${message}`;
+    results.set(cacheKey(route), result);
+  }
 }
 
-function unclassifiedMissing(route: Route): ClassifiedRoute {
-  return {
-    ...route,
-    action_name: `${route.method.toLowerCase()}_unclassified`,
-    description: "Needs review — missing classification.",
-    action_type: "other",
-    parameters: route.params,
-    classification_status: "unclassified",
-  };
+function isOk(route: ClassifiedRoute | undefined): boolean {
+  return route?.classification_status === "ok";
+}
+
+function isQuotaError(error: unknown): boolean {
+  const text = error instanceof Error ? error.message : String(error);
+  return /429|RESOURCE_EXHAUSTED|quota/i.test(text);
+}
+
+function matchKey(method: string, path: string): string {
+  const normalizedPath = path.replace(/\/+$/, "") || "/";
+  return `${method.toUpperCase()}:${normalizedPath}`;
+}
+
+function cacheKey(route: Route): string {
+  return classificationCacheKey(route.sourceHash, route.method, route.path);
 }

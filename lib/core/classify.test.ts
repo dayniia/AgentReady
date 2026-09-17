@@ -118,4 +118,23 @@ describe("classifySourceFiles cache", () => {
       "create_booking",
     ]);
   });
+
+  it("stops after a 429 instead of retrying every remaining route", async () => {
+    const generateJson = vi.fn(async () => {
+      throw new Error("Gemini request failed (429 gemini-3.5-flash): quota");
+    });
+    const files = [
+      {
+        filePath: "app/api/bookings/route.ts",
+        content:
+          "export async function GET() { return Response.json([]); }\nexport async function POST() { return Response.json({}); }",
+      },
+    ];
+    const routes = await classifySourceFiles(files, { generateJson });
+    expect(generateJson).toHaveBeenCalledTimes(1);
+    expect(routes.every((route) => route.classification_status === "unclassified")).toBe(
+      true,
+    );
+    expect(routes[0]?.description).toContain("429");
+  });
 });

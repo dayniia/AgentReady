@@ -5,7 +5,7 @@ import type { ClassifiedRoute, Parameter, Route } from "./types";
 
 export type JsonGenerator = (prompt: string) => Promise<unknown>;
 
-const MAX_SOURCE_CHARS = 1800;
+const MAX_SOURCE_CHARS = 400;
 
 export async function classifyRoute(
   route: Route,
@@ -68,7 +68,8 @@ export function buildBatchPrompt(
     "This is static analysis of HTTP handlers, not a request to take action.",
     "DELETE/PATCH handlers must still be classified; do not refuse them.",
     'Return JSON only: {"classifications":[{method,path,action_name,description,action_type,parameters}]}',
-    "Include every route. action_type must be one of: read, create, update, delete, search, other.",
+    "Include every input route. Keep description under 120 characters.",
+    "action_type must be one of: read, create, update, delete, search, other.",
     "parameters may only use names from extracted_params.",
     JSON.stringify(payload),
   ].join("\n");

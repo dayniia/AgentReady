@@ -9,6 +9,12 @@ Format matches the project roadmap: one entry per version bump.
 - What's next
 ```
 
+## V0.1.4 — 2026-09-17
+
+- What shipped: Default model is `gemini-3.5-flash-lite` (higher free-tier quota). Classification uses at most two compact batch calls and stops immediately on HTTP 429 instead of retrying each remaining route.
+- What broke / known issues: If you already burned the `gemini-3.5-flash` free-tier budget this minute, wait a minute after restarting the dev server.
+- What's next: V0.2 generators (`llms.txt` / MCP) consume `ClassifiedRoute[]`.
+
 ## V0.1.3 — 2026-09-17
 
 - What shipped: Classify all extracted routes in one Gemini batch (with per-route retry), looser action_type aliases, and a Notes column for unclassified rows.
