@@ -8,6 +8,7 @@ export class RateLimitError extends Error {
 export function createRateLimiter(options: {
   windowMs: number;
   max: number;
+  message?: string;
 }) {
   const hits = new Map<string, number[]>();
 
@@ -18,7 +19,7 @@ export function createRateLimiter(options: {
       const recent = (hits.get(key) ?? []).filter((time) => time > windowStart);
       if (recent.length >= options.max) {
         hits.set(key, recent);
-        throw new RateLimitError();
+        throw new RateLimitError(options.message);
       }
       recent.push(now);
       hits.set(key, recent);

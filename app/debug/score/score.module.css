@@ -1,0 +1,208 @@
+.page {
+  min-height: 100vh;
+  padding: 2rem;
+  max-width: 56rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.kicker {
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--foreground) 55%, transparent);
+}
+
+.lede,
+.meta,
+.warnings {
+  color: color-mix(in srgb, var(--foreground) 72%, transparent);
+  line-height: 1.5;
+}
+
+.form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  margin: 1rem 0;
+}
+
+.form input {
+  flex: 1 1 20rem;
+  padding: 0.6rem 0.7rem;
+  border: 1px solid color-mix(in srgb, var(--foreground) 18%, transparent);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+}
+
+.form button {
+  padding: 0.6rem 0.9rem;
+  border: 0;
+  background: var(--foreground);
+  color: var(--background);
+  font: inherit;
+  cursor: pointer;
+}
+
+.form button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.error {
+  color: #b42318;
+}
+
+.heroes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: 0.75rem;
+  margin: 0.5rem 0 1rem;
+}
+
+.hero {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 1rem 1.1rem 1.1rem;
+  border: 1px solid color-mix(in srgb, var(--foreground) 12%, transparent);
+}
+
+.frontier {
+  background: color-mix(in srgb, var(--foreground) 4%, transparent);
+}
+
+.heroKicker {
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--foreground) 55%, transparent);
+}
+
+.heroNote {
+  font-size: 0.85rem;
+  line-height: 1.45;
+  color: color-mix(in srgb, var(--foreground) 68%, transparent);
+}
+
+.total {
+  font-size: 3.25rem;
+  font-weight: 700;
+  letter-spacing: -0.05em;
+  line-height: 1;
+}
+
+.total span {
+  font-size: 1.2rem;
+  font-weight: 500;
+  margin-left: 0.15rem;
+  color: color-mix(in srgb, var(--foreground) 55%, transparent);
+}
+
+.band {
+  font-size: 1.05rem;
+  text-transform: capitalize;
+}
+
+.categories {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.category {
+  padding: 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--foreground) 12%, transparent);
+}
+
+.categoryName {
+  font-size: 0.8rem;
+  color: color-mix(in srgb, var(--foreground) 65%, transparent);
+}
+
+.categoryScore {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-top: 0.25rem;
+}
+
+.frontierCategory {
+  background: color-mix(in srgb, var(--foreground) 4%, transparent);
+}
+
+.tableWrap {
+  overflow-x: auto;
+  margin-bottom: 1.25rem;
+}
+
+.tableTitle {
+  font-size: 1rem;
+  font-weight: 650;
+  margin: 0 0 0.35rem;
+}
+
+.tableNote {
+  font-size: 0.85rem;
+  margin: 0 0 0.5rem;
+  color: color-mix(in srgb, var(--foreground) 68%, transparent);
+}
+
+.tableWrap table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.tableWrap th,
+.tableWrap td {
+  text-align: left;
+  padding: 0.45rem 0.4rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--foreground) 12%, transparent);
+  vertical-align: top;
+}
+
+.pass {
+  color: #067647;
+}
+
+.partial {
+  color: #b54708;
+}
+
+.fail {
+  color: #b42318;
+}
+
+.unverified {
+  color: #b54708;
+  font-weight: 600;
+}
+
+.unverifiedRow td {
+  background: color-mix(in srgb, #b54708 8%, transparent);
+}
+
+.hint {
+  margin: 0.35rem 0 0;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  color: color-mix(in srgb, var(--foreground) 72%, transparent);
+}
+
+.json {
+  margin-top: 0.5rem;
+  padding: 0.75rem;
+  overflow-x: auto;
+  font-size: 0.8rem;
+  background: color-mix(in srgb, var(--foreground) 6%, transparent);
+}
+
+.json pre {
+  margin: 0.75rem 0 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+}

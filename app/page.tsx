@@ -5,11 +5,12 @@ export default function Home() {
     <main className={styles.page}>
       <h1>AgentReady</h1>
       <p>
-        Point this at a Next.js repo to extract routes and classify them for AI
-        agents. Dashboard and generators land in later versions.
+        Scan a Next.js repo for routes and generated agent files, or paste a
+        live URL for an Agent Readiness Score.
       </p>
       <p>
-        Pipeline inspector: <a href="/debug/scan">/debug/scan</a>
+        Pipeline inspectors: <a href="/debug/scan">/debug/scan</a> ·{" "}
+        <a href="/debug/score">/debug/score</a>
       </p>
     </main>
   );

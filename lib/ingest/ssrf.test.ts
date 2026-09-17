@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseGitHubRepoUrl, UnsafeUrlError } from "./ssrf";
+import { assertSafeLiveUrl, parseGitHubRepoUrl, UnsafeUrlError } from "./ssrf";
 
 describe("parseGitHubRepoUrl", () => {
   it("parses owner/repo shorthand, quotes, and trailing punctuation", () => {
@@ -65,5 +65,30 @@ describe("parseGitHubRepoUrl", () => {
       UnsafeUrlError,
     );
     expect(() => parseGitHubRepoUrl("not a url")).toThrow(UnsafeUrlError);
+  });
+});
+
+describe("assertSafeLiveUrl", () => {
+  it("accepts public https URLs on port 443", () => {
+    expect(assertSafeLiveUrl("https://example.com/path").href).toBe(
+      "https://example.com/path",
+    );
+  });
+
+  it("rejects http, credentials, odd ports, and private hosts", () => {
+    const blocked = [
+      "http://example.com",
+      "https://user:pass@example.com",
+      "https://example.com:8443",
+      "https://localhost",
+      "https://127.0.0.1",
+      "https://169.254.169.254/latest/meta-data",
+      "https://[::1]/",
+      "https://metadata.google.internal",
+      "file:///etc/passwd",
+    ];
+    for (const url of blocked) {
+      expect(() => assertSafeLiveUrl(url)).toThrow(UnsafeUrlError);
+    }
   });
 });

@@ -119,11 +119,82 @@ function isSafeName(value: string): boolean {
   return OWNER_REPO_RE.test(value) && value !== "." && value !== "..";
 }
 
-function isBlockedHost(host: string): boolean {
+const MAX_LIVE_URL_LENGTH = 2048;
+
+export function assertSafeLiveUrl(input: string): URL {
+  const trimmed = input.trim().replace(/^\uFEFF/, "").replace(/\u00a0/g, " ").trim();
+  if (!trimmed) {
+    throw new UnsafeUrlError("URL is required");
+  }
+  if (trimmed.length > MAX_LIVE_URL_LENGTH) {
+    throw new UnsafeUrlError("URL is too long");
+  }
+
+  let parsed: URL;
+  try {
+    parsed = new URL(trimmed);
+  } catch {
+    throw new UnsafeUrlError("Invalid URL — use an https:// address");
+  }
+
+  parsed.hash = "";
+
+  if (parsed.protocol !== "https:") {
+    throw new UnsafeUrlError("Only HTTPS URLs are allowed");
+  }
+  if (parsed.username || parsed.password) {
+    throw new UnsafeUrlError("URLs with credentials are not allowed");
+  }
+  if (parsed.port && parsed.port !== "443") {
+    throw new UnsafeUrlError("Only HTTPS port 443 is allowed");
+  }
+
+  const host = parsed.hostname.toLowerCase();
+  if (isBlockedHost(host) || isPrivateNetworkHost(host)) {
+    throw new UnsafeUrlError("Private or metadata hosts are not allowed");
+  }
+
+  return parsed;
+}
+
+export function isBlockedHost(host: string): boolean {
   if (BLOCKED_HOSTS.has(host) || host.endsWith(".localhost")) {
     return true;
   }
-  return isPrivateIPv4(host);
+  return isPrivateIp(host);
+}
+
+function isPrivateNetworkHost(host: string): boolean {
+  return (
+    host.endsWith(".local") ||
+    host.endsWith(".internal") ||
+    host.endsWith(".lan") ||
+    host.endsWith(".home")
+  );
+}
+
+export function isPrivateIp(host: string): boolean {
+  const value = host.replace(/^\[/, "").replace(/\]$/, "").toLowerCase();
+  if (isPrivateIPv4(value)) {
+    return true;
+  }
+  if (value.includes(":")) {
+    if (value === "::1" || value === "0:0:0:0:0:0:0:1") {
+      return true;
+    }
+    if (
+      value.startsWith("fe80:") ||
+      value.startsWith("fc") ||
+      value.startsWith("fd")
+    ) {
+      return true;
+    }
+  }
+  const mapped = value.match(/^:?ffff:(\d{1,3}(?:\.\d{1,3}){3})$/);
+  if (mapped?.[1]) {
+    return isPrivateIPv4(mapped[1]);
+  }
+  return false;
 }
 
 function isPrivateIPv4(host: string): boolean {

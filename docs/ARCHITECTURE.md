@@ -14,6 +14,14 @@ GitHub URL
     → ClassifiedRoute[]
     → lib/generators (llms.txt, mcp-tools.json, mcp-server.mjs)
     → POST /api/scan  and  /debug/scan (copy + zip)
+
+Live HTTPS URL
+    → lib/ingest/live (HTTPS + DNS SSRF + size/time caps)
+    → retries (3 attempts, backoff) on homepage + well-known probes
+    → lib/score (rules only, no Gemini)
+         today: discovery + structured data + raw HTML, rescaled to 100
+         frontier: MCP / OpenAPI / WebMCP / A2A, shown separately
+    → POST /api/score  and  /debug/score
 ```
 
 ## Core contract
@@ -65,7 +73,7 @@ writeOutputs(routes); // Person B generators
 ## Security
 
 - `GEMINI_API_KEY` is server-only (`createGeminiJsonGenerator` in `lib/core/gemini.ts`)
-- User URLs are parsed; the fetch target is always `api.github.com` / `codeload.github.com`
-- Localhost, private IPs, metadata hosts, and non-GitHub hosts are rejected
-- Scanned code is never `eval`'d
-- Scan endpoint is rate-limited per IP; CORS is locked to `APP_ORIGIN`
+- User URLs are parsed; GitHub fetch targets `api.github.com` / `codeload.github.com`
+- Live scoring fetches public HTTPS URLs only (port 443). Localhost, private IPs, metadata hosts, credentials, and http are rejected. Redirects are re-checked.
+- Scanned code is never `eval`'d; scored pages are never executed as JS
+- Scan and score endpoints are rate-limited per IP; CORS is locked to `APP_ORIGIN`

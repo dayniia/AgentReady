@@ -9,6 +9,12 @@ Format matches the project roadmap: one entry per version bump.
 - What's next
 ```
 
+## V0.3 — 2026-09-17
+
+- What shipped: Agent Readiness Score for a live HTTPS URL. Headline is **Today's Readiness** (discovery + structured data + raw HTML, rescaled to 100). **Frontier Score** (MCP / OpenAPI / WebMCP / A2A) is separate and labeled as an emerging standard. Live fetches retry 3 times with backoff; timeouts are `unverified` ("Could not verify"), not the same as confirmed absence. Confirmed gaps include a `hint` (what to add); timeouts do not. `POST /api/score` and `/debug/score`. Rules only (no Gemini). Stub `llms.txt` scores lower than a populated one.
+- What broke / known issues: WebMCP is static-HTML detection only (no JS runtime); live scoring is public HTTPS:443 with SSRF checks; inspector UI is `/debug/score` until Person D's dashboard. Top-level `total` now aliases Today's Readiness, not the old blended 100.
+- What's next: V0.6 demo booking app (V0.4/V0.5 Voxide skipped). Person D landing page in parallel.
+
 ## V0.2 — 2026-09-17
 
 - What shipped: Tool now generates llms.txt and MCP tool definitions automatically, with copy-paste and zip-download delivery. Also emits a runnable `mcp-server.mjs` (stdio JSON-RPC) from the same classified JSON — no extra Gemini calls.
