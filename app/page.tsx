@@ -11,6 +11,8 @@ export default function Home() {
       <p>
         Pipeline inspectors: <a href="/debug/scan">/debug/scan</a> ·{" "}
         <a href="/debug/score">/debug/score</a>
+        {" · "}
+        Sample booking app: <a href="/demo">/demo</a>
       </p>
     </main>
   );

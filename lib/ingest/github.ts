@@ -6,7 +6,7 @@ import { promisify } from "node:util";
 import JSZip from "jszip";
 import { isRouteFile, normalizePath } from "@/lib/core/extractors/nextjs";
 import type { SourceFile } from "@/lib/core/types";
-import { readRouteFilesFromDirectory } from "./files";
+import { readRouteFilesFromDirectory, SKIP_INGEST_DIRS } from "./files";
 import { MAX_ROUTE_FILE_BYTES, MAX_ZIP_BYTES } from "./limits";
 import {
   assertSafeDownloadUrl,
@@ -73,6 +73,9 @@ export async function routeFilesFromZip(
     }
     const relative = stripZipRoot(entryName);
     const filePath = normalizePath(relative);
+    if (filePath.split("/").some((segment) => SKIP_INGEST_DIRS.has(segment))) {
+      continue;
+    }
     if (!isRouteFile(filePath)) {
       continue;
     }

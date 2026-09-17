@@ -2,7 +2,7 @@
 
 A tool that scans a Next.js codebase and generates the files AI agents need to *use* your app — `llms.txt`, MCP tool definitions, and (later) Voxide capabilities. Paste a live URL to get an **Agent Readiness Score**.
 
-This repo is in **V0.3**: scan + classify + generate (V0.1/V0.2), plus a rules-only readiness score for live HTTPS URLs. The headline is **Today's Readiness** (discovery, structured data, raw HTML). **Frontier Score** (MCP / WebMCP / A2A) is shown separately because adoption is still near zero. Voxide dashboard and Person D UI come next. See [Roadmap.md](./Roadmap.md).
+This repo is in **V0.6**: scan + classify + generate + live score, plus a Harbor Table booking demo at `/demo` (Voxide skipped). Today's Readiness is the headline score; Frontier Score is shown separately. Person D landing page comes next. See [Roadmap.md](./Roadmap.md).
 
 ## Prerequisites
 
@@ -21,6 +21,7 @@ Open [http://localhost:3000](http://localhost:3000).
 
 - Scan inspector: [http://localhost:3000/debug/scan](http://localhost:3000/debug/scan)
 - Score inspector: [http://localhost:3000/debug/score](http://localhost:3000/debug/score)
+- Demo booking app: [http://localhost:3000/demo](http://localhost:3000/demo)
 
 ## Environment variables
 

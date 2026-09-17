@@ -31,6 +31,10 @@ async function fixtureZip(): Promise<ArrayBuffer> {
   zip.file(`${prefix}/lib/utils.ts`, "export const skip = true;");
   zip.file(`${prefix}/README.md`, "# not a route");
   zip.file(`${prefix}/.env`, "SECRET=nope");
+  zip.file(
+    `${prefix}/fixtures/nextjs-mini-api/app/api/bookings/route.ts`,
+    "export async function GET() { return Response.json([]); }",
+  );
   return zip.generateAsync({ type: "arraybuffer" });
 }
 

@@ -4,13 +4,14 @@ import { isRouteFile, normalizePath } from "@/lib/core/extractors/nextjs";
 import type { SourceFile } from "@/lib/core/types";
 import { MAX_ROUTE_FILE_BYTES } from "./limits";
 
-const SKIP_DIRS = new Set([
+export const SKIP_INGEST_DIRS = new Set([
   "node_modules",
   ".git",
   ".next",
   "dist",
   "build",
   "coverage",
+  "fixtures",
 ]);
 
 export function readRouteFilesFromDirectory(root: string): SourceFile[] {
@@ -25,7 +26,7 @@ export function readRouteFilesFromDirectory(root: string): SourceFile[] {
     }
 
     for (const entry of entries) {
-      if (SKIP_DIRS.has(entry)) {
+      if (SKIP_INGEST_DIRS.has(entry)) {
         continue;
       }
       const full = path.join(dir, entry);

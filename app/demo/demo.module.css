@@ -1,0 +1,98 @@
+.page {
+  min-height: 100vh;
+  padding: 2rem;
+  max-width: 56rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.kicker {
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--foreground) 55%, transparent);
+}
+
+.page h1 {
+  font-size: 2rem;
+  letter-spacing: -0.04em;
+}
+
+.page p,
+.meta,
+.list span,
+.list em {
+  color: color-mix(in srgb, var(--foreground) 72%, transparent);
+  line-height: 1.55;
+}
+
+.page a {
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: 1.25rem;
+  margin-top: 0.5rem;
+  align-items: start;
+}
+
+.list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.list li {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--foreground) 12%, transparent);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 1rem;
+  border: 1px solid color-mix(in srgb, var(--foreground) 12%, transparent);
+}
+
+.form h2 {
+  font-size: 1.1rem;
+  margin-bottom: 0.35rem;
+}
+
+.form input {
+  padding: 0.55rem 0.65rem;
+  margin-bottom: 0.35rem;
+  border: 1px solid color-mix(in srgb, var(--foreground) 18%, transparent);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+}
+
+.form button {
+  margin-top: 0.35rem;
+  padding: 0.6rem 0.9rem;
+  border: 0;
+  background: var(--foreground);
+  color: var(--background);
+  font: inherit;
+  cursor: pointer;
+}
+
+.form button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.error {
+  color: #b42318;
+}

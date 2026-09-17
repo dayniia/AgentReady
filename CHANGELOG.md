@@ -9,6 +9,12 @@ Format matches the project roadmap: one entry per version bump.
 - What's next
 ```
 
+## V0.6 — 2026-09-17
+
+- What shipped: Harbor Table demo booking app at `/demo` with list/create/search/update/cancel APIs (`/api/bookings`, `/api/bookings/[id]`, `/api/search`), plus `/llms.txt`, `/robots.txt`, `/sitemap.xml`, and `/openapi.json` so the live score has real manifests. Workspace and GitHub ingest skip `fixtures/` so the scan shows the running demo routes, not the extractor samples.
+- What broke / known issues: Reservations are in-memory (reset on server restart). Voxide (V0.4/V0.5) is skipped. Inspector UI is still `/debug/*` until Person D's landing page.
+- What's next: V0.7 landing page / Person D UI. Then V1.0 hardening.
+
 ## V0.3 — 2026-09-17
 
 - What shipped: Agent Readiness Score for a live HTTPS URL. Headline is **Today's Readiness** (discovery + structured data + raw HTML, rescaled to 100). **Frontier Score** (MCP / OpenAPI / WebMCP / A2A) is separate and labeled as an emerging standard. Live fetches retry 3 times with backoff; timeouts are `unverified` ("Could not verify"), not the same as confirmed absence. Confirmed gaps include a `hint` (what to add); timeouts do not. `POST /api/score` and `/debug/score`. Rules only (no Gemini). Stub `llms.txt` scores lower than a populated one.

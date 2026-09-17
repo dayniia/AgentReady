@@ -100,6 +100,43 @@ describe("extractNextJsRoutes", () => {
     expect(getBookings?.params).toEqual([]);
   });
 
+  it("extracts the Harbor Table demo APIs from the running app", () => {
+    const appRoot = path.resolve(
+      path.dirname(fileURLToPath(import.meta.url)),
+      "../../..",
+    );
+    const demoFiles: SourceFile[] = [
+      "app/api/bookings/route.ts",
+      "app/api/bookings/[id]/route.ts",
+      "app/api/search/route.ts",
+    ].map((filePath) => ({
+      filePath,
+      content: readFileSync(path.join(appRoot, filePath), "utf8"),
+    }));
+    const demoRoutes = extractNextJsRoutes(demoFiles);
+    expect(
+      demoRoutes
+        .filter((route) => route.path === "/api/bookings")
+        .map((route) => route.method),
+    ).toEqual(["GET", "POST"]);
+    expect(
+      demoRoutes.find(
+        (route) => route.path === "/api/bookings" && route.method === "POST",
+      )?.params,
+    ).toEqual(
+      expect.arrayContaining([
+        { name: "guestName", in: "body", required: false },
+        { name: "slot", in: "body", required: false },
+        { name: "partySize", in: "body", required: false },
+      ]),
+    );
+    expect(
+      demoRoutes
+        .filter((route) => route.path === "/api/bookings/[id]")
+        .map((route) => route.method),
+    ).toEqual(["DELETE", "GET", "PATCH"]);
+  });
+
   it("strips GET body params that only exist on sibling methods", () => {
     const getById = routes.find(
       (route) => route.path === "/api/bookings/[id]" && route.method === "GET",

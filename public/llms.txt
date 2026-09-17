@@ -1,0 +1,9 @@
+# Harbor Table
+
+Harbor Table is a small restaurant booking desk shipped with AgentReady so the scanner has real routes to classify. Humans book a table on /demo. Agents should use the HTTP APIs.
+
+- [Booking desk](/demo)
+- [List and create reservations](/api/bookings)
+- [Reservation by id](/api/bookings/{id})
+- [Search reservations](/api/search)
+- [OpenAPI spec](/openapi.json)

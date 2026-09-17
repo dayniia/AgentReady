@@ -1,0 +1,64 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Harbor Table",
+    "version": "0.6.0",
+    "description": "Tiny restaurant booking API used to demo AgentReady."
+  },
+  "paths": {
+    "/api/bookings": {
+      "get": {
+        "summary": "List reservations",
+        "operationId": "listBookings"
+      },
+      "post": {
+        "summary": "Create a reservation",
+        "operationId": "createBooking",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["guestName", "slot", "partySize"],
+                "properties": {
+                  "guestName": { "type": "string" },
+                  "slot": { "type": "string", "format": "date-time" },
+                  "partySize": { "type": "integer", "minimum": 1, "maximum": 12 },
+                  "notes": { "type": "string" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/bookings/{id}": {
+      "get": {
+        "summary": "Get a reservation",
+        "operationId": "getBooking",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ]
+      },
+      "patch": {
+        "summary": "Update a reservation",
+        "operationId": "updateBooking"
+      },
+      "delete": {
+        "summary": "Cancel a reservation",
+        "operationId": "deleteBooking"
+      }
+    },
+    "/api/search": {
+      "get": {
+        "summary": "Search reservations",
+        "operationId": "searchBookings",
+        "parameters": [
+          { "name": "q", "in": "query", "schema": { "type": "string" } },
+          { "name": "limit", "in": "query", "schema": { "type": "integer" } }
+        ]
+      }
+    }
+  }
+}
