@@ -9,6 +9,12 @@ Format matches the project roadmap: one entry per version bump.
 - What's next
 ```
 
+## V0.1.3 — 2026-09-17
+
+- What shipped: Classify all extracted routes in one Gemini batch (with per-route retry), looser action_type aliases, and a Notes column for unclassified rows.
+- What broke / known issues: Workspace scans include `fixtures/` demo APIs as well as `/api/scan`.
+- What's next: V0.2 generators (`llms.txt` / MCP) consume `ClassifiedRoute[]`.
+
 ## V0.1.2 — 2026-09-17
 
 - What shipped: Default Gemini model is `gemini-3.5-flash` (`gemini-2.0-flash` was shut down). Classification errors now appear in route descriptions and scan warnings instead of failing silently. Failed Gemini calls are not cached.

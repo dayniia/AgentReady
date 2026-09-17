@@ -2,7 +2,7 @@ export type { ActionType, ClassifiedRoute, HttpMethod, Parameter, Route, SourceF
 export type { JsonGenerator } from "./classify";
 export { extractNextJsRoutes } from "./extractors/nextjs";
 export { stripSecrets } from "./secrets";
-export { classifyRoute, unclassified } from "./classify";
+export { classifyRoute, unclassified, classifiedFrom } from "./classify";
 export { classifySourceFiles } from "./pipeline";
 export { ClassificationCache, classificationCacheKey } from "./cache";
 export { parseClassification } from "./schema";

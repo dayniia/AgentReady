@@ -78,12 +78,15 @@ async function classifyIngested(
       }));
 
   const routes = await classify(files, generateJson);
-  if (
-    routes.length > 0 &&
-    routes.every((route) => route.classification_status === "unclassified")
-  ) {
+  const classifiedCount = routes.filter(
+    (route) => route.classification_status === "ok",
+  ).length;
+  if (routes.length > 0 && classifiedCount < routes.length) {
+    const firstMiss = routes.find(
+      (route) => route.classification_status === "unclassified",
+    );
     warnings.push(
-      `Gemini classified 0/${routes.length} routes. ${routes[0]?.description ?? ""}`.trim(),
+      `Gemini classified ${classifiedCount}/${routes.length} routes.${firstMiss ? ` ${firstMiss.method} ${firstMiss.path}: ${firstMiss.description}` : ""}`,
     );
   }
   return { repo, routes, warnings };

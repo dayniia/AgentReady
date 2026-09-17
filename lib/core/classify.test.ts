@@ -84,4 +84,38 @@ describe("classifySourceFiles cache", () => {
     await classifySourceFiles(files, { generateJson, cache });
     expect(generateJson).toHaveBeenCalledTimes(1);
   });
+
+  it("classifies multiple routes from one batch response", async () => {
+    const generateJson = vi.fn(async () => ({
+      classifications: [
+        {
+          method: "GET",
+          path: "/api/bookings",
+          action_name: "list_bookings",
+          description: "List bookings",
+          action_type: "read",
+        },
+        {
+          method: "POST",
+          path: "/api/bookings",
+          action_name: "create_booking",
+          description: "Create a booking",
+          action_type: "create",
+        },
+      ],
+    }));
+    const files = [
+      {
+        filePath: "app/api/bookings/route.ts",
+        content:
+          "export async function GET() { return Response.json([]); }\nexport async function POST() { return Response.json({}); }",
+      },
+    ];
+    const routes = await classifySourceFiles(files, { generateJson });
+    expect(generateJson).toHaveBeenCalledTimes(1);
+    expect(routes.map((route) => route.action_name)).toEqual([
+      "list_bookings",
+      "create_booking",
+    ]);
+  });
 });

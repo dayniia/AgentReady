@@ -39,5 +39,12 @@ describe("parseClassification", () => {
         action_type: "READ",
       }),
     ).toMatchObject({ action_type: "read" });
+    expect(
+      parseClassification({
+        action_name: "remove_booking",
+        description: "Delete a booking",
+        action_type: "remove",
+      }),
+    ).toMatchObject({ action_type: "delete" });
   });
 });

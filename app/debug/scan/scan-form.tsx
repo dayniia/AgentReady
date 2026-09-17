@@ -108,6 +108,7 @@ export default function ScanForm() {
                 <th>Path</th>
                 <th>Action</th>
                 <th>Status</th>
+                <th>Notes</th>
               </tr>
             </thead>
             <tbody>
@@ -117,6 +118,11 @@ export default function ScanForm() {
                   <td>{route.path}</td>
                   <td>{route.action_name}</td>
                   <td>{route.classification_status}</td>
+                  <td>
+                    {route.classification_status === "unclassified"
+                      ? route.description
+                      : route.action_type}
+                  </td>
                 </tr>
               ))}
             </tbody>
