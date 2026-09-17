@@ -33,6 +33,14 @@ describe("classifyRoute", () => {
     expect(result.action_type).toBe("other");
   });
 
+  it("keeps the Gemini error in the unclassified description", async () => {
+    const result = await classifyRoute(route, "export async function GET() {}", async () => {
+      throw new Error("Gemini request failed (404 gemini-2.0-flash)");
+    });
+    expect(result.classification_status).toBe("unclassified");
+    expect(result.description).toContain("404 gemini-2.0-flash");
+  });
+
   it("does not let the model invent parameters", async () => {
     const withParam: Route = {
       ...route,

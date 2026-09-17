@@ -1,4 +1,5 @@
 import { stripSecrets } from "./secrets";
+import { DEFAULT_GEMINI_MODEL } from "./models";
 
 export type GeminiGenerateOptions = {
   apiKey: string;
@@ -9,7 +10,10 @@ export type GeminiGenerateOptions = {
 export function createGeminiJsonGenerator(
   options: GeminiGenerateOptions,
 ): (prompt: string) => Promise<unknown> {
-  const model = options.model ?? process.env.GEMINI_MODEL ?? "gemini-2.0-flash";
+  const model =
+    options.model?.trim() ||
+    process.env.GEMINI_MODEL?.trim() ||
+    DEFAULT_GEMINI_MODEL;
   const fetchImpl = options.fetch ?? fetch;
 
   return async (prompt: string) => {
@@ -30,7 +34,10 @@ export function createGeminiJsonGenerator(
     });
 
     if (!response.ok) {
-      throw new Error(`Gemini request failed (${response.status})`);
+      const detail = await response.text();
+      throw new Error(
+        `Gemini request failed (${response.status} ${model}): ${detail.slice(0, 400)}`,
+      );
     }
 
     const payload = (await response.json()) as {
@@ -40,6 +47,13 @@ export function createGeminiJsonGenerator(
     if (!text) {
       throw new Error("Gemini returned an empty response");
     }
-    return JSON.parse(text) as unknown;
+    return parseModelJson(text);
   };
+}
+
+export function parseModelJson(text: string): unknown {
+  const trimmed = text.trim();
+  const fenced = trimmed.match(/```(?:json)?\s*([\s\S]*?)```/i);
+  const raw = (fenced?.[1] ?? trimmed).trim();
+  return JSON.parse(raw) as unknown;
 }

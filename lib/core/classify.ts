@@ -25,8 +25,12 @@ export async function classifyRoute(
       parameters: mergeParameters(route.params, parsed.parameters),
       classification_status: "ok",
     };
-  } catch {
-    return unclassified(route);
+  } catch (error) {
+    const result = unclassified(route);
+    result.description = `Needs review — ${
+      error instanceof Error ? error.message : "classification failed"
+    }`;
+    return result;
   }
 }
 

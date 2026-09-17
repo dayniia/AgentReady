@@ -9,6 +9,12 @@ Format matches the project roadmap: one entry per version bump.
 - What's next
 ```
 
+## V0.1.2 — 2026-09-17
+
+- What shipped: Default Gemini model is `gemini-3.5-flash` (`gemini-2.0-flash` was shut down). Classification errors now appear in route descriptions and scan warnings instead of failing silently. Failed Gemini calls are not cached.
+- What broke / known issues: Restart `npm run dev` after changing `GEMINI_MODEL` in `.env.local`.
+- What's next: V0.2 generators (`llms.txt` / MCP) consume `ClassifiedRoute[]`.
+
 ## V0.1.1 — 2026-09-17
 
 - What shipped: GitHub URL parser accepts `owner/repo`, quotes, and trailing punctuation. If Node's HTTPS fetch times out, ingest falls back to `git clone`. Debug page can scan this workspace without GitHub.

@@ -23,6 +23,23 @@ export const classificationSchema = z.object({
 export type ClassificationFields = z.infer<typeof classificationSchema>;
 
 export function parseClassification(input: unknown): ClassificationFields | null {
-  const parsed = classificationSchema.safeParse(input);
+  let value = input;
+  if (typeof value === "string") {
+    try {
+      const fenced = value.trim().match(/```(?:json)?\s*([\s\S]*?)```/i);
+      value = JSON.parse((fenced?.[1] ?? value).trim()) as unknown;
+    } catch {
+      return null;
+    }
+  }
+  if (value && typeof value === "object") {
+    const record = { ...(value as Record<string, unknown>) };
+    if (typeof record.action_type === "string") {
+      record.action_type = record.action_type.toLowerCase();
+    }
+    const parsed = classificationSchema.safeParse(record);
+    return parsed.success ? parsed.data : null;
+  }
+  const parsed = classificationSchema.safeParse(value);
   return parsed.success ? parsed.data : null;
 }

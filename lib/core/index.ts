@@ -7,3 +7,4 @@ export { classifySourceFiles } from "./pipeline";
 export { ClassificationCache, classificationCacheKey } from "./cache";
 export { parseClassification } from "./schema";
 export { createGeminiJsonGenerator } from "./gemini";
+export { DEFAULT_GEMINI_MODEL } from "./models";

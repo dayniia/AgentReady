@@ -36,7 +36,9 @@ export async function classifySourceFiles(
     }
     const source = sourceByPath.get(route.filePath) ?? "";
     const result = await classifyRoute(route, source, options.generateJson);
-    cache.set(key, result);
+    if (result.classification_status === "ok") {
+      cache.set(key, result);
+    }
     classified.push(result);
   }
 

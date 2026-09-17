@@ -32,5 +32,12 @@ describe("parseClassification", () => {
         action_type: "explode",
       }),
     ).toBeNull();
+    expect(
+      parseClassification({
+        action_name: "list_bookings",
+        description: "List all bookings",
+        action_type: "READ",
+      }),
+    ).toMatchObject({ action_type: "read" });
   });
 });

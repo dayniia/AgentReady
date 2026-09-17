@@ -78,6 +78,14 @@ async function classifyIngested(
       }));
 
   const routes = await classify(files, generateJson);
+  if (
+    routes.length > 0 &&
+    routes.every((route) => route.classification_status === "unclassified")
+  ) {
+    warnings.push(
+      `Gemini classified 0/${routes.length} routes. ${routes[0]?.description ?? ""}`.trim(),
+    );
+  }
   return { repo, routes, warnings };
 }
 
